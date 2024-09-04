@@ -2,35 +2,34 @@ name: Go
 
 on:
   push:
-    branches: [ Aula_1 ]
+    branches: [ '*' ]
   pull_request:
-    branches: [ Aula_1 ]
+    branches: [ '*' ]
 
 jobs:
-
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go_version: ['1.18', '1.17', '>=1.18']
+        go_version: ['1.18', '1.17']
+        os: ['ubuntu-latest', 'ubuntu-18.04']
     steps:
-    - uses: actions/checkout@v3
-
+    - uses: actions/checkout@v4
     - name: Set up Go
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v4
       with:
         go-version: ${{ matrix.go_version }}
-      
+    - name: Install Docker Compose
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker-compose
     - name: Build-DB
       run: docker-compose build
-      
     - name: Create-DB
       run: docker-compose up -d
-
     - name: Test
-      run: go test -v main_test.go 
-      
-  
+      run: go test -v ./...
+
   build:
     needs: test
     runs-on: ${{ matrix.os }}
@@ -38,6 +37,10 @@ jobs:
       matrix:
         os: ['ubuntu-latest', 'ubuntu-18.04']
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ matrix.go_version }}
     - name: Build
-      run: go build -v main.go
+      run: go build -v ./...
