@@ -16,4 +16,4 @@ jobs:
       uses: docker/login-action@v3.3.0
       with:
         username: BorgesMath
-        password: ${{ secrets.SENHA_DOCKER_HUB }}
+        password: 123456789
