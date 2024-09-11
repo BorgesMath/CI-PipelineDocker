@@ -25,14 +25,28 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: ${{ matrix.go_version }}
+    
     - name: Install Docker Compose
       run: |
         sudo apt-get update
         sudo apt-get install -y docker-compose
+
     - name: Build-DB
       run: docker-compose build
+    
     - name: Create-DB
       run: docker-compose up -d
+
+    # Novo passo para esperar o PostgreSQL estar pronto
+    - name: Wait for PostgreSQL
+      run: |
+        while ! nc -z localhost 5432; do   
+          sleep 1
+        done
+    
+    - name: Wait for DB to be ready
+      run: sleep 10
+
     - name: Test
       run: go test -v ./...
 
@@ -50,7 +64,6 @@ jobs:
         go-version: ${{ matrix.go_version }}
     - name: Build
       run: go build -v ./...
-
 
   docker: 
     needs: build
