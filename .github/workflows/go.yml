@@ -52,10 +52,7 @@ jobs:
 
   build:
     needs: test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: ['ubuntu-latest']
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Set up Go
@@ -64,6 +61,14 @@ jobs:
         go-version: ${{ matrix.go_version }}
     - name: Build
       run: go build -v ./...
+
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.2.1-node20
+      with:
+    # Artifact name
+        name: program
+        path: main
+          
 
   docker: 
     needs: build
