@@ -59,7 +59,6 @@ jobs:
       with:
         go-version: ${{ matrix.go_version }}
     
-    # Corrige para compilar o arquivo main.go da raiz
     - name: Build
       run: go build -o program .
 
