@@ -59,9 +59,9 @@ jobs:
       with:
         go-version: ${{ matrix.go_version }}
     
-    # Compila o pacote principal
+    # Corrige para compilar o arquivo main.go da raiz
     - name: Build
-      run: go build -o program ./main
+      run: go build -o program .
 
     - name: List build files
       run: ls -la
