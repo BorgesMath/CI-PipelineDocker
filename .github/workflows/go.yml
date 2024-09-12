@@ -59,8 +59,9 @@ jobs:
       with:
         go-version: ${{ matrix.go_version }}
     
+    # Compila o pacote principal
     - name: Build
-      run: go build -o program ./...
+      run: go build -o program ./main
 
     - name: List build files
       run: ls -la
@@ -92,5 +93,5 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: borgesmath/go_ci:${{github.ref_name}} # nome tem que ser em minusculas, nome da branch em seguida
+        tags: borgesmath/go_ci:${{github.ref_name}}
 
