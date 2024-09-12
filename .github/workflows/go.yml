@@ -37,7 +37,6 @@ jobs:
     - name: Create-DB
       run: docker-compose up -d
 
-    # Novo passo para esperar o PostgreSQL estar pronto
     - name: Wait for PostgreSQL
       run: |
         while ! nc -z localhost 5432; do   
@@ -59,18 +58,39 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: ${{ matrix.go_version }}
+    
     - name: Build
-      run: go build -v ./...
+      run: go build -o program ./...
+
+    - name: List build files
+      run: ls -la
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.2.1-node20
       with:
-    # Artifact name
         name: program
-        path: main
-          
+        path: ./program
 
   docker: 
     needs: build
-    uses: ./.github/workflows/Docker.yml
-    secrets: inherit
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: setup Docker Build
+      uses: docker/setup-buildx-action@v3.6.1
+
+    - name: Docker Login
+      uses: docker/login-action@v3.3.0
+      with:
+        username: ${{ secrets.LOGIN_DOCKER_HUB }}
+        password: ${{ secrets.SENHA_DOCKER_HUB }}
+
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v6.7.0
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: borgesmath/go_ci:${{github.ref_name}} # nome tem que ser em minusculas, nome da branch em seguida
+
